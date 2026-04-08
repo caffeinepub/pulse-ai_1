@@ -1,21 +1,30 @@
 import { Toaster } from "@/components/ui/sonner";
 import { useState } from "react";
-import { toast } from "sonner";
 import { AuthScreen } from "./components/AuthScreen";
 import { MainLayout } from "./components/MainLayout";
+import { OnboardingScreen } from "./components/OnboardingScreen";
 import { SplashScreen } from "./components/SplashScreen";
 
-type Screen = "splash" | "auth" | "main";
+type AppState = "splash" | "auth" | "onboarding" | "main";
+
+interface PendingUser {
+  uid: string;
+  email: string;
+  fullName: string;
+}
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>("splash");
+  const [appState, setAppState] = useState<AppState>("splash");
+  const [pendingUser, setPendingUser] = useState<PendingUser | null>(null);
 
-  function handleAuthSuccess() {
-    toast.success("Welcome to the Nexus!", {
-      description: "You're now connected to the Pulse.",
-      duration: 3500,
-    });
-    setScreen("main");
+  function handleNeedsOnboarding(user: PendingUser) {
+    setPendingUser(user);
+    setAppState("onboarding");
+  }
+
+  function handleOnboardingComplete() {
+    setPendingUser(null);
+    setAppState("main");
   }
 
   return (
@@ -37,11 +46,26 @@ export default function App() {
             "0 0 0 1px rgba(138,43,226,0.08), 0 0 80px rgba(138,43,226,0.05), 0 25px 80px rgba(0,0,0,0.8)",
         }}
       >
-        {screen === "splash" && (
-          <SplashScreen onComplete={() => setScreen("auth")} />
+        {appState === "splash" && (
+          <SplashScreen
+            onLoggedIn={() => setAppState("main")}
+            onNeedAuth={() => setAppState("auth")}
+            onNeedsOnboarding={handleNeedsOnboarding}
+          />
         )}
-        {screen === "auth" && <AuthScreen onSuccess={handleAuthSuccess} />}
-        {screen === "main" && <MainLayout />}
+        {appState === "auth" && (
+          <AuthScreen
+            onAuthenticated={() => setAppState("main")}
+            onNeedsOnboarding={handleNeedsOnboarding}
+          />
+        )}
+        {appState === "onboarding" && pendingUser && (
+          <OnboardingScreen
+            user={pendingUser}
+            onComplete={handleOnboardingComplete}
+          />
+        )}
+        {appState === "main" && <MainLayout />}
       </div>
 
       {/* Global toast provider — bottom-center, dark theme */}

@@ -1,3 +1,4 @@
+import { Layers } from "lucide-react";
 import { useState } from "react";
 
 type FilterTab = "All" | "Sparks" | "Moments" | "Echoes";
@@ -8,21 +9,6 @@ const filterTabs: { id: FilterTab; label: string }[] = [
   { id: "Moments", label: "Moments (\ud83d\udcf8)" },
   { id: "Echoes", label: "Echoes (\ud83d\udc64)" },
 ];
-
-// 9 masonry grid items with alternating heights and icons
-const gridItems = [
-  { id: "grid-1", tall: true, icon: "\u2728" },
-  { id: "grid-2", tall: false, icon: "\ud83d\udcf8" },
-  { id: "grid-3", tall: false, icon: "\u2728" },
-  { id: "grid-4", tall: true, icon: "\ud83d\udcf8" },
-  { id: "grid-5", tall: true, icon: "\u2728" },
-  { id: "grid-6", tall: false, icon: "\ud83d\udcf8" },
-  { id: "grid-7", tall: false, icon: "\u2728" },
-  { id: "grid-8", tall: true, icon: "\ud83d\udcf8" },
-  { id: "grid-9", tall: false, icon: "\u2728" },
-];
-
-const gradientAngles = ["145deg", "210deg", "165deg"];
 
 export function TwinTab() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>("All");
@@ -36,7 +22,7 @@ export function TwinTab() {
       }}
       data-ocid="twin.page"
     >
-      {/* \u2500\u2500 TOP SECTION: Avatar + Username \u2500\u2500 */}
+      {/* ── TOP SECTION: Avatar + Username ── */}
       <div className="flex flex-col items-center pt-7 pb-4 px-4">
         {/* Glowing ring wrapper */}
         <div
@@ -122,11 +108,11 @@ export function TwinTab() {
               "0 0 10px rgba(138,43,226,0.35), inset 0 0 8px rgba(138,43,226,0.08)",
           }}
         >
-          AI Twin \ud83e\udd16
+          AI Twin 🤖
         </div>
       </div>
 
-      {/* \u2500\u2500 STATS ROW \u2500\u2500 */}
+      {/* ── STATS ROW ── */}
       <div
         className="flex items-stretch mx-4 rounded-xl"
         style={{
@@ -145,7 +131,6 @@ export function TwinTab() {
             key={stat.label}
             className="flex-1 flex flex-col items-center py-3 relative"
           >
-            {/* Divider (right side, not last) */}
             {i < arr.length - 1 && (
               <div
                 className="absolute right-0 top-3 bottom-3"
@@ -177,7 +162,7 @@ export function TwinTab() {
         ))}
       </div>
 
-      {/* \u2500\u2500 BIO SECTION: Twin Persona \u2500\u2500 */}
+      {/* ── BIO SECTION: Twin Persona ── */}
       <div
         className="mx-4 mt-3 px-4 py-3"
         style={{
@@ -205,7 +190,7 @@ export function TwinTab() {
           {[
             "Friendly",
             "Tech Enthusiast",
-            "Status: \ud83d\udfe2 Active (Auto-replying)",
+            "Status: 🟢 Active (Auto-replying)",
           ].map((item) => (
             <li
               key={item}
@@ -224,7 +209,7 @@ export function TwinTab() {
                   lineHeight: "1.4",
                 }}
               >
-                \u2726
+                ✦
               </span>
               <span>{item}</span>
             </li>
@@ -232,7 +217,7 @@ export function TwinTab() {
         </ul>
       </div>
 
-      {/* \u2500\u2500 FILTER TABS \u2500\u2500 */}
+      {/* ── FILTER TABS ── */}
       <div
         className="flex gap-2 mt-4 scrollbar-hide"
         style={{
@@ -278,69 +263,41 @@ export function TwinTab() {
         })}
       </div>
 
-      {/* \u2500\u2500 MASONRY GRID \u2500\u2500 */}
+      {/* ── GRID EMPTY STATE ── */}
       <div
-        style={{
-          columns: 2,
-          columnGap: 8,
-          padding: "0 16px 80px",
-        }}
-        data-ocid="twin.list"
+        className="flex-1 flex items-center justify-center py-12 px-6"
+        data-ocid="twin.empty.grid"
+        style={{ minHeight: 160 }}
       >
-        {gridItems.map((item, position) => (
+        <div className="flex flex-col items-center gap-4 text-center">
           <div
-            key={item.id}
-            data-ocid={`twin.item.${position + 1}`}
+            className="w-14 h-14 rounded-full flex items-center justify-center"
             style={{
-              breakInside: "avoid",
-              marginBottom: 8,
-              borderRadius: 10,
-              overflow: "hidden",
-              aspectRatio: item.tall ? "4 / 5" : "1 / 1",
-              position: "relative",
-              background: `linear-gradient(${gradientAngles[position % 3]}, rgba(20,10,40,0.9), rgba(10,5,20,0.95) 50%, rgba(30,15,50,0.8))`,
+              background: "rgba(138,43,226,0.06)",
+              border: "1px solid rgba(138,43,226,0.15)",
             }}
           >
-            {/* Subtle violet shimmer overlay */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "radial-gradient(ellipse at 30% 20%, rgba(138,43,226,0.08) 0%, transparent 60%), " +
-                  "linear-gradient(180deg, rgba(138,43,226,0.04) 0%, transparent 40%)",
-                pointerEvents: "none",
-              }}
+            <Layers
+              className="w-6 h-6"
+              style={{ color: "rgba(138,43,226,0.35)" }}
             />
-            {/* Grid pattern overlay */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage:
-                  "linear-gradient(rgba(138,43,226,0.06) 1px, transparent 1px), " +
-                  "linear-gradient(90deg, rgba(138,43,226,0.06) 1px, transparent 1px)",
-                backgroundSize: "20px 20px",
-                pointerEvents: "none",
-              }}
-            />
-            {/* Icon centered */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: item.tall ? 24 : 20,
-                color: "rgba(138,43,226,0.3)",
-                userSelect: "none",
-              }}
-            >
-              {item.icon}
-            </div>
           </div>
-        ))}
+
+          <div className="space-y-1.5">
+            <p
+              className="text-[14px] font-semibold text-gray-300"
+              style={{ fontFamily: "Outfit, sans-serif" }}
+            >
+              No posts yet
+            </p>
+            <p
+              className="text-[11px] text-gray-600 leading-relaxed max-w-[200px]"
+              style={{ fontFamily: "Inter, sans-serif" }}
+            >
+              Your Sparks and Moments will appear here
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

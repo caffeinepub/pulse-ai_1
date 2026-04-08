@@ -1,0 +1,27 @@
+type Username = text;
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   displayName: text;
+   userId: UserId;
+   username: Username;
+ };
+type UserId = principal;
+type Password = text;
+service : {
+  _initializeAccessControl: () -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  getAllUserProfiles: () -> (vec UserProfile) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getUserProfile: (userId: UserId) -> (UserProfile) query;
+  isCallerAdmin: () -> (bool) query;
+  login: (username: Username, password: Password) -> (UserId);
+  register: (username: Username, password: Password) -> ();
+  saveCallerUserProfile: (_displayName: text) -> ();
+}

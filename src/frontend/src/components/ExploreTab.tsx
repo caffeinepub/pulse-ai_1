@@ -1,13 +1,5 @@
-import { Play, Search, Sparkles } from "lucide-react";
+import { Compass, Search, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
-
-/* ─── Types ─── */
-interface GridItem {
-  id: number;
-  src: string;
-  label: string;
-  isVideo?: boolean;
-}
 
 /* ─── Data ─── */
 const TAGS = [
@@ -20,109 +12,6 @@ const TAGS = [
   "#Digital",
   "#Surreal",
 ];
-
-const GRID_ITEMS: GridItem[] = [
-  {
-    id: 1,
-    src: "/assets/generated/explore-cyberpunk-1.dim_200x280.jpg",
-    label: "#Cyberpunk",
-    isVideo: false,
-  },
-  {
-    id: 2,
-    src: "/assets/generated/explore-anime-1.dim_200x240.jpg",
-    label: "#Anime",
-    isVideo: false,
-  },
-  {
-    id: 3,
-    src: "/assets/generated/explore-abstract-1.dim_200x200.jpg",
-    label: "#Abstract",
-    isVideo: true,
-  },
-  {
-    id: 4,
-    src: "/assets/generated/explore-cyberpunk-2.dim_200x300.jpg",
-    label: "#Cyberpunk",
-    isVideo: false,
-  },
-  {
-    id: 5,
-    src: "/assets/generated/explore-anime-2.dim_200x250.jpg",
-    label: "#Anime",
-    isVideo: true,
-  },
-  {
-    id: 6,
-    src: "/assets/generated/explore-abstract-2.dim_200x220.jpg",
-    label: "#Abstract",
-    isVideo: false,
-  },
-  {
-    id: 7,
-    src: "/assets/generated/explore-nature-2.dim_200x230.jpg",
-    label: "#Nature",
-    isVideo: false,
-  },
-  {
-    id: 8,
-    src: "/assets/generated/explore-nature-1.dim_200x260.jpg",
-    label: "#Nature",
-    isVideo: true,
-  },
-];
-
-/* ─── Grid Item ─── */
-function MasonryItem({ item, index }: { item: GridItem; index: number }) {
-  return (
-    <div
-      data-ocid={`explore.grid.item.${index + 1}`}
-      className="break-inside-avoid mb-2 rounded-xl overflow-hidden relative border border-white/5 cursor-pointer group"
-    >
-      <img
-        src={item.src}
-        alt={item.label}
-        className="w-full object-cover block"
-        loading="lazy"
-      />
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-
-      {/* Play button overlay (video items) */}
-      {item.isVideo && (
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <div className="bg-black/50 rounded-full p-2">
-            <Play className="w-4 h-4 text-white fill-white" />
-          </div>
-        </div>
-      )}
-
-      {/* Tag label */}
-      <span
-        className="absolute bottom-2 left-2 text-[9px] font-inter text-white/80 px-1.5 py-0.5 rounded"
-        style={{
-          background: "rgba(0,0,0,0.45)",
-          backdropFilter: "blur(4px)",
-        }}
-      >
-        {item.label}
-      </span>
-
-      {/* Video indicator dot */}
-      {item.isVideo && (
-        <div
-          className="absolute top-2 right-2 w-4 h-4 flex items-center justify-center rounded-full"
-          style={{
-            background: "rgba(138,43,226,0.8)",
-            boxShadow: "0 0 6px rgba(138,43,226,0.6)",
-          }}
-        >
-          <Play className="w-2.5 h-2.5 text-white fill-white" />
-        </div>
-      )}
-    </div>
-  );
-}
 
 /* ─── Main ExploreTab ─── */
 export function ExploreTab() {
@@ -154,13 +43,10 @@ export function ExploreTab() {
               : "none",
           }}
         >
-          {/* Left: Search icon */}
           <Search
             className="w-4 h-4 flex-shrink-0 transition-colors duration-200"
             style={{ color: isFocused ? "#8A2BE2" : "rgba(138,43,226,0.6)" }}
           />
-
-          {/* Input */}
           <input
             ref={inputRef}
             data-ocid="explore.search.input"
@@ -172,8 +58,6 @@ export function ExploreTab() {
             placeholder="Ask AI to explore..."
             className="flex-1 bg-transparent border-0 outline-none text-sm text-white placeholder-gray-500 font-inter"
           />
-
-          {/* Right: AI badge */}
           <div
             className="flex items-center gap-1 px-2 py-0.5 rounded-full flex-shrink-0 transition-all duration-300"
             style={{
@@ -228,12 +112,39 @@ export function ExploreTab() {
         })}
       </div>
 
-      {/* ── Section 3: Masonry Grid ── */}
-      <div className="px-3 pt-3 pb-4">
-        <div className="columns-2 gap-2">
-          {GRID_ITEMS.map((item, i) => (
-            <MasonryItem key={item.id} item={item} index={i} />
-          ))}
+      {/* ── Section 3: Empty State ── */}
+      <div
+        className="flex-1 flex items-center justify-center py-16 px-6"
+        data-ocid="explore.empty.grid"
+      >
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center"
+            style={{
+              background: "rgba(138,43,226,0.06)",
+              border: "1px solid rgba(138,43,226,0.15)",
+            }}
+          >
+            <Compass
+              className="w-7 h-7"
+              style={{ color: "rgba(138,43,226,0.35)" }}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <p
+              className="text-[15px] font-semibold text-gray-300"
+              style={{ fontFamily: "Outfit, sans-serif" }}
+            >
+              No signals found
+            </p>
+            <p
+              className="text-[12px] text-gray-600 leading-relaxed max-w-[220px]"
+              style={{ fontFamily: "Inter, sans-serif" }}
+            >
+              Explore content will appear here once connected
+            </p>
+          </div>
         </div>
       </div>
     </div>

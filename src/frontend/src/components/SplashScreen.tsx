@@ -1,85 +1,122 @@
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { auth, db } from "../firebase";
 import { PulseWaveLogo } from "./PulseWaveLogo";
 
-interface SplashScreenProps {
-  onComplete: () => void;
+interface PendingUser {
+  uid: string;
+  email: string;
+  fullName: string;
 }
 
-export function SplashScreen({ onComplete }: SplashScreenProps) {
+interface SplashScreenProps {
+  onLoggedIn: () => void;
+  onNeedAuth: () => void;
+  onNeedsOnboarding: (user: PendingUser) => void;
+}
+
+type Destination =
+  | { type: "main" }
+  | { type: "auth" }
+  | { type: "onboarding"; user: PendingUser };
+
+export function SplashScreen({
+  onLoggedIn,
+  onNeedAuth,
+  onNeedsOnboarding,
+}: SplashScreenProps) {
   const [fadeOut, setFadeOut] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [destination, setDestination] = useState<Destination | null>(null);
 
+  // Check Firebase auth state once, with onboarding check
   useEffect(() => {
-    const fadeTimer = setTimeout(() => {
-      setFadeOut(true);
-    }, 3000);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setDestination({ type: "auth" });
+        unsubscribe();
+        return;
+      }
 
+      // Logged in — check if onboarding was completed
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (!snap.exists() || snap.data()?.needsOnboarding) {
+          setDestination({
+            type: "onboarding",
+            user: {
+              uid: user.uid,
+              email: user.email ?? "",
+              fullName: snap.data()?.fullName ?? "",
+            },
+          });
+        } else {
+          setDestination({ type: "main" });
+        }
+      } catch {
+        // On Firestore error, proceed to main app (auth succeeded)
+        setDestination({ type: "main" });
+      }
+
+      unsubscribe();
+    });
+    return unsubscribe;
+  }, []);
+
+  // Transition after delay + destination resolved
+  useEffect(() => {
+    if (!destination) return;
+
+    const fadeTimer = setTimeout(() => setFadeOut(true), 2800);
     const completeTimer = setTimeout(() => {
       setVisible(false);
-      onComplete();
-    }, 3550);
+      if (destination.type === "main") {
+        onLoggedIn();
+      } else if (destination.type === "onboarding") {
+        onNeedsOnboarding(destination.user);
+      } else {
+        onNeedAuth();
+      }
+    }, 3350);
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(completeTimer);
     };
-  }, [onComplete]);
+  }, [destination, onLoggedIn, onNeedAuth, onNeedsOnboarding]);
 
   if (!visible) return null;
 
   return (
     <div
-      className="absolute inset-0 flex flex-col items-center justify-center bg-app-dark"
+      className="absolute inset-0 flex flex-col items-center justify-center"
       style={{
-        transition: "opacity 0.5s ease-out",
+        backgroundColor: "#000000",
+        transition: "opacity 0.55s ease-out",
         opacity: fadeOut ? 0 : 1,
         zIndex: 50,
       }}
     >
-      {/* Background radial glow */}
+      {/* Subtle background radial glow */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 50% 50%, rgba(138,43,226,0.12) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 50% at 50% 50%, rgba(138,43,226,0.13) 0%, transparent 70%)",
         }}
       />
 
-      {/* Logo and text container */}
-      <div className="relative flex flex-col items-center gap-6 animate-fade-in-up">
-        {/* Pulse Wave Logo */}
-        <PulseWaveLogo size="large" />
-
-        {/* PULSE AI text */}
-        <div className="flex flex-col items-center gap-2">
-          <h1
-            className="font-syncopate font-bold tracking-widest neon-text-shadow"
-            style={{
-              fontSize: "2rem",
-              color: "#8A2BE2",
-              letterSpacing: "0.3em",
-            }}
-          >
-            PULSE AI
-          </h1>
-
-          <p
-            className="font-inter text-sm"
-            style={{
-              color: "#7070a0",
-              letterSpacing: "0.15em",
-            }}
-          >
-            Formed with AI
-          </p>
-        </div>
+      {/* Horizontal logo centered on screen */}
+      <div className="relative flex items-center justify-center animate-fade-in-up">
+        <PulseWaveLogo size="lg" />
       </div>
 
       {/* Bottom fade */}
       <div
         className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
         style={{
-          background: "linear-gradient(to top, #050508, transparent)",
+          background: "linear-gradient(to top, #000000, transparent)",
         }}
       />
     </div>

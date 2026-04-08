@@ -29,5 +29,5 @@ export interface backendInterface {
     isCallerAdmin(): Promise<boolean>;
     login(username: Username, password: Password): Promise<UserId>;
     register(username: Username, password: Password): Promise<void>;
-    saveCallerUserProfile(displayName: string): Promise<void>;
+    saveCallerUserProfile(_displayName: string): Promise<void>;
 }
