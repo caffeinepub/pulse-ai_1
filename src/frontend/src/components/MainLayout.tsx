@@ -1,6 +1,6 @@
-import { Bell, Compass, Zap } from "lucide-react";
+import { Bell, Compass, Settings, Zap } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { ExploreTab } from "./ExploreTab";
 import { IgniteTab } from "./IgniteTab";
 import { NexusTab } from "./NexusTab";
@@ -170,6 +170,13 @@ function CompassNavButton({
 /* ─── Main Layout ─── */
 export function MainLayout() {
   const [activeTab, setActiveTab] = useState<TabId>("Vibe");
+  // Holds the TwinTab's "open settings" handler once Twin mounts
+  const openSettingsRef = useRef<(() => void) | null>(null);
+
+  // TwinTab calls this to register its settings opener
+  const handleSettingsOpen = useCallback((handler: () => void) => {
+    openSettingsRef.current = handler;
+  }, []);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -182,7 +189,7 @@ export function MainLayout() {
       case "Nexus":
         return <NexusTab />;
       case "Twin":
-        return <TwinTab />;
+        return <TwinTab onSettingsOpen={handleSettingsOpen} />;
       default:
         return (
           <div className="flex items-center justify-center h-full">
@@ -202,15 +209,33 @@ export function MainLayout() {
       {/* ── TOP HEADER ── */}
       <header className="absolute top-0 w-full h-16 bg-[#0a0a0a] flex items-center justify-between px-4 z-50">
         {/* Left: Horizontal PULSE AI logo */}
-        <PulseWaveLogo size="sm" />
+        <PulseWaveLogo size="sm" layout="horizontal" />
 
-        {/* Right: Bell icon — visual only, no popup */}
-        <div
-          data-ocid="header.bell.icon"
-          className="p-1.5"
-          aria-label="Notifications"
-        >
-          <Bell className="w-6 h-6 text-gray-300" />
+        {/* Right: Settings (Twin only) + Bell icon */}
+        <div className="flex items-center gap-1">
+          {activeTab === "Twin" && (
+            <button
+              type="button"
+              data-ocid="header.settings.icon"
+              onClick={() => openSettingsRef.current?.()}
+              className="p-1.5 rounded-full transition-colors"
+              aria-label="Settings"
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <Settings className="w-5 h-5 text-gray-400 hover:text-violet-400 transition-colors duration-200" />
+            </button>
+          )}
+          <div
+            data-ocid="header.bell.icon"
+            className="p-1.5"
+            aria-label="Notifications"
+          >
+            <Bell className="w-6 h-6 text-gray-300" />
+          </div>
         </div>
       </header>
 

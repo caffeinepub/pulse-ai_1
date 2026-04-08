@@ -136,7 +136,8 @@ export function AuthScreen({
           fullName: snap.data()?.fullName ?? "",
         });
       } else {
-        toast.success("Welcome back to the Nexus! 🚀");
+        const name = snap.data()?.fullName ?? "there";
+        toast.success(`Welcome back, ${name}!`);
         onAuthenticated();
       }
     } catch (err: unknown) {
@@ -181,7 +182,7 @@ export function AuthScreen({
       });
 
       // Immediately clear loading and navigate to onboarding
-      toast.success("Account created! Complete your profile 🎉");
+      toast.success("Account created! Welcome to the Nexus.");
       onNeedsOnboarding({
         uid: createdUid,
         email: createdEmail,
@@ -219,7 +220,7 @@ export function AuthScreen({
       >
         {/* Logo header — horizontal layout (icon + PULSE AI text) */}
         <div className="flex items-center justify-center">
-          <PulseWaveLogo size="md" />
+          <PulseWaveLogo size="md" layout="horizontal" />
         </div>
 
         {/* Mode toggle */}
@@ -373,11 +374,13 @@ function getFirebaseError(err: unknown): string {
     const code = (err as { code: string }).code;
     switch (code) {
       case "auth/user-not-found":
+        return "No account found with that email.";
       case "auth/wrong-password":
+        return "Wrong password.";
       case "auth/invalid-credential":
         return "Invalid email or password. Please try again.";
       case "auth/email-already-in-use":
-        return "This email is already registered. Try logging in.";
+        return "Email already in use.";
       case "auth/weak-password":
         return "Password must be at least 6 characters.";
       case "auth/invalid-email":
@@ -385,10 +388,13 @@ function getFirebaseError(err: unknown): string {
       case "auth/too-many-requests":
         return "Too many attempts. Please try again later.";
       case "auth/network-request-failed":
-        return "Network error. Check your connection and try again.";
+        return "Network error. Check your connection.";
       default:
-        return "Something went wrong. Please try again.";
+        break;
     }
+  }
+  if (err && typeof err === "object" && "message" in err) {
+    return (err as { message: string }).message;
   }
   return "Something went wrong. Please try again.";
 }

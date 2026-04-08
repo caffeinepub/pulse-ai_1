@@ -107,9 +107,9 @@ export function SplashScreen({
         }}
       />
 
-      {/* Horizontal logo centered on screen */}
-      <div className="relative flex items-center justify-center animate-fade-in-up">
-        <PulseWaveLogo size="lg" />
+      {/* Vertical logo: icon stacked above "PULSE AI" text */}
+      <div className="relative flex items-center justify-center">
+        <PulseWaveLogo size="lg" layout="vertical" />
       </div>
 
       {/* Bottom fade */}

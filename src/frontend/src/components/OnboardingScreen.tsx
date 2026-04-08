@@ -103,6 +103,7 @@ export function OnboardingScreen({ user, onComplete }: OnboardingScreenProps) {
 
       if (!snap.empty) {
         setUsernameError(`@${trimmed} is already taken. Try another.`);
+        setIsLoading(false);
         return;
       }
 
@@ -151,7 +152,7 @@ export function OnboardingScreen({ user, onComplete }: OnboardingScreenProps) {
       >
         {/* Header — horizontal logo */}
         <div className="flex flex-col items-center gap-3">
-          <PulseWaveLogo size="md" />
+          <PulseWaveLogo size="md" layout="horizontal" />
           <h2
             className="font-bold mt-1 text-center"
             style={{
